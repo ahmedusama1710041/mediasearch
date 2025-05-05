@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - my_network
+  mediasearch-be:
+    image: mediasearch:latest
+    container_name: mediasearch-be
+    ports:
+      - "8080:8080"
+    networks:
+      - my_network
+  mediasearch-fe:
+    image: mediasearch-fe:latest
+    container_name: mediasearch-fe
+    ports:
+      - "80:80"
+    networks:
+      - my_network
+    environment:
+      - BACKEND_URL=http://192.168.100.255:8080
+
+volumes:
+  mysql_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  my_network:
+    driver: bridge
